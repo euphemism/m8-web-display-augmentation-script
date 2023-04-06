@@ -2,7 +2,7 @@
 // @name         M8 Web Display Augmentations
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
-// @version      1.0.4
+// @version      1.0.5
 // @updateURL    https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @downloadURL  https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @author       euphemism
@@ -113,6 +113,45 @@
 
     const actionToActionElementMap = new Map();
 
+    const cloneActionButton = (el) => {
+      const clonedAction = el.cloneNode(true);
+
+      clonedAction.dataset.clone = "true";
+      clonedAction.style.borderStyle = "dashed";
+
+      clones.get(el.dataset.action).push(clonedAction);
+
+      addDeleteButtonToClone(clonedAction);
+
+      const createButton = clonedAction.querySelector(".create-clone-button");
+
+      clonedAction.removeChild(createButton);
+      createButton?.remove();
+
+      parent.appendChild(clonedAction);
+
+      return clonedAction;
+    };
+
+    const addCloneButtonToAction = (el) => {
+      console.log(`adding clone button to ${el.dataset.action}`);
+      const cloneButton = document.createElement("button");
+
+      cloneButton.classList.add("auxiliary-action");
+      cloneButton.classList.add("create-clone-button");
+      cloneButton.classList.add("flex-center");
+
+      cloneButton.innerText = "📎";
+
+      cloneButton.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        cloneActionButton(el);
+      });
+
+      el.appendChild(cloneButton);
+    };
+
     for (let i = 0; i < children.length; i++) {
       const child = children[i];
 
@@ -123,6 +162,8 @@
       child.innerHTML = keyCharacterMap.get(children[i].dataset.action);
 
       actionToActionElementMap.set(child.dataset.action, child);
+
+      addCloneButtonToAction(child);
     }
 
     const parseCachedCoords = (el) => {
@@ -161,44 +202,6 @@
       el.appendChild(deleteButton);
     };
 
-    const cloneActionButton = (el) => {
-      const clonedAction = el.cloneNode(true);
-
-      clonedAction.dataset.clone = "true";
-      clonedAction.style.borderStyle = "dashed";
-
-      clones.get(el.dataset.action).push(clonedAction);
-
-      addDeleteButtonToClone(clonedAction);
-
-      const createButton = clonedAction.querySelector(".create-clone-button");
-
-      clonedAction.removeChild(createButton);
-      createButton?.remove();
-
-      parent.appendChild(clonedAction);
-
-      return clonedAction;
-    };
-
-    const addCloneButtonToAction = (el) => {
-      const cloneButton = document.createElement("button");
-
-      cloneButton.classList.add("auxiliary-action");
-      cloneButton.classList.add("create-clone-button");
-      cloneButton.classList.add("flex-center");
-
-      cloneButton.innerText = "📎";
-
-      cloneButton.addEventListener("click", (e) => {
-        e.preventDefault();
-
-        cloneActionButton(el);
-      });
-
-      el.appendChild(cloneButton);
-    };
-
     const toggleAugmentedButtonActions = (show) => {
       document.querySelectorAll(".auxiliary-action").forEach((el) => {
         if (show) {
@@ -223,10 +226,6 @@
             hydratedElement.dataset.y = y;
 
             setTranslate(0, 0, hydratedElement);
-
-            if (i === 0) {
-              addCloneButtonToAction(hydratedElement);
-            }
           });
         });
 
