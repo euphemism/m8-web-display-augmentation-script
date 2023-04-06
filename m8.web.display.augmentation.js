@@ -2,7 +2,7 @@
 // @name         M8 Web Display Augmentations
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
-// @version      1.0.3
+// @version      1.0.4
 // @updateURL    https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @downloadURL  https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @author       euphemism
@@ -38,7 +38,7 @@
     .button-container {
       display: flex;
       flex-direction: column;
-      flex-gap: 0.5em;
+      gap: 0.5em;
     }
 
     .create-clone-button {
@@ -266,7 +266,6 @@
 
     const resetButton = document.createElement("button");
     resetButton.innerText = "↺";
-    resetButton.style.marginBottom = "0.25em";
 
     resetButton.addEventListener("click", resetKeyPositions);
 
