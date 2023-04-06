@@ -2,7 +2,7 @@
 // @name         M8 Web Display Augmentations
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
-// @version      1.0.2
+// @version      1.0.3
 // @updateURL    https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @downloadURL  https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @author       euphemism
@@ -39,6 +39,13 @@
       display: flex;
       flex-direction: column;
       flex-gap: 0.5em;
+    }
+
+    .create-clone-button {
+      padding: 0.45em;
+      position: absolute;
+      right: -1.5em;
+      bottom: -1.5em;
     }
 
     .delete-clone-button {
@@ -112,6 +119,7 @@
       child.classList.add("draggable");
       child.classList.add("flex-center");
       child.classList.add("jiggle");
+
       child.innerHTML = keyCharacterMap.get(children[i].dataset.action);
 
       actionToActionElementMap.set(child.dataset.action, child);
@@ -129,10 +137,14 @@
 
     const addDeleteButtonToClone = (el) => {
       const deleteButton = document.createElement("button");
+
+      deleteButton.classList.add("auxiliary-action");
       deleteButton.classList.add("delete-clone-button");
       deleteButton.classList.add("flex-center");
+
       deleteButton.innerText = "x";
       deleteButton.dataset.delete = "1";
+
       deleteButton.addEventListener("click", () => {
         const actionClones = clones.get(el.dataset.action);
         const i = actionClones.findIndex((item) => item === el);
@@ -153,17 +165,48 @@
       const clonedAction = el.cloneNode(true);
 
       clonedAction.dataset.clone = "true";
-      clonedAction.dataset.x = clonedAction.dataset.x + 5;
-      clonedAction.dataset.y = clonedAction.dataset.y + 5;
       clonedAction.style.borderStyle = "dashed";
+
+      clones.get(el.dataset.action).push(clonedAction);
 
       addDeleteButtonToClone(clonedAction);
 
-      clones.get(el.dataset.action).push(clonedAction);
+      const createButton = clonedAction.querySelector(".create-clone-button");
+
+      clonedAction.removeChild(createButton);
+      createButton?.remove();
 
       parent.appendChild(clonedAction);
 
       return clonedAction;
+    };
+
+    const addCloneButtonToAction = (el) => {
+      const cloneButton = document.createElement("button");
+
+      cloneButton.classList.add("auxiliary-action");
+      cloneButton.classList.add("create-clone-button");
+      cloneButton.classList.add("flex-center");
+
+      cloneButton.innerText = "📎";
+
+      cloneButton.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        cloneActionButton(el);
+      });
+
+      el.appendChild(cloneButton);
+    };
+
+    const toggleAugmentedButtonActions = (show) => {
+      document.querySelectorAll(".auxiliary-action").forEach((el) => {
+        if (show) {
+          el.classList.remove("invisible");
+        } else {
+          el.classList.add("invisible");
+        }
+      });
     };
 
     const hydrateKeyPositionsFromLocalStorage = () => {
@@ -180,23 +223,19 @@
             hydratedElement.dataset.y = y;
 
             setTranslate(0, 0, hydratedElement);
+
+            if (i === 0) {
+              addCloneButtonToAction(hydratedElement);
+            }
           });
         });
+
+        toggleAugmentedButtonActions(!isLocked);
       }
     };
 
-    const toggleDeleteCloneButtons = (show) => {
-      document.querySelectorAll(".delete-clone-button").forEach((el) => {
-        if (show) {
-          el.classList.remove("invisible");
-        } else {
-          el.classList.add("invisible");
-        }
-      });
-    };
-
     hydrateKeyPositionsFromLocalStorage();
-    toggleDeleteCloneButtons(false);
+    toggleAugmentedButtonActions(false);
 
     const persistKeyPositionsToLocalStorage = (reset = false) => {
       const actionPositions = {};
@@ -235,7 +274,8 @@
     toggleButton.innerText = "🔒";
 
     toggleButton.addEventListener("click", () => {
-      toggleDeleteCloneButtons(isLocked);
+      toggleAugmentedButtonActions(isLocked);
+
       if (isLocked) {
         toggleButton.innerText = "🔓";
         toggleButton.style.transform = "rotate(15deg)";
@@ -260,6 +300,7 @@
     });
 
     const buttonContainer = document.createElement("div");
+
     buttonContainer.classList.add("button-container");
     buttonContainer.style.position = "fixed";
     buttonContainer.style.bottom = "10px";
@@ -289,7 +330,6 @@
     document.addEventListener("mousemove", drag, {
       capture: true,
     });
-    document.addEventListener("dblclick", doubleClick, { capture: true });
 
     function dragStart(e) {
       if (e.target.classList.contains("draggable") && !isLocked) {
@@ -312,14 +352,6 @@
         }
 
         isDragging = true;
-      }
-    }
-
-    function doubleClick(e) {
-      if (e.target.dataset.action && !e.target.dataset.clone && !isLocked) {
-        e.preventDefault();
-
-        cloneActionButton(e.target);
       }
     }
 
