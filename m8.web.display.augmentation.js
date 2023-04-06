@@ -2,7 +2,7 @@
 // @name         M8 Web Display Augmentations
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @updateURL    https://raw.githubusercontent.com/euphemism/m8-web-display-augmentation-script/main/m8.web.display.augmentation.js
 // @downloadURL  https://raw.githubusercontent.com/euphemism/m8-web-display-augmentation-script/main/m8.web.display.augmentation.js
 // @author       euphemism
@@ -12,6 +12,8 @@
 
 (function () {
   "use strict";
+
+  console.log('testing script update');
 
   const keyCharacterMap = new Map([
     ["left", "◀"],
