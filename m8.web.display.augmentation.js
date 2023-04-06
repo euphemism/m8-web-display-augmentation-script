@@ -3,6 +3,8 @@
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
 // @version      1.0.0
+// @updateURL    https://raw.githubusercontent.com/euphemism/m8-web-display-augmentation-script/main/m8.web.display.augmentation.js
+// @downloadURL  https://raw.githubusercontent.com/euphemism/m8-web-display-augmentation-script/main/m8.web.display.augmentation.js
 // @author       euphemism
 // @match        https://derkyjadex.github.io/M8WebDisplay/
 // @grant        none
