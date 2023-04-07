@@ -2,7 +2,7 @@
 // @name         M8 Web Display Augmentations
 // @description  Clone and move on-screen controls
 // @namespace    http://tampermonkey.net/
-// @version      1.0.5
+// @version      1.0.6
 // @updateURL    https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @downloadURL  https://github.com/euphemism/m8-web-display-augmentation-script/raw/main/m8.web.display.augmentation.js
 // @author       euphemism
@@ -134,7 +134,6 @@
     };
 
     const addCloneButtonToAction = (el) => {
-      console.log(`adding clone button to ${el.dataset.action}`);
       const cloneButton = document.createElement("button");
 
       cloneButton.classList.add("auxiliary-action");
@@ -332,8 +331,6 @@
     function dragStart(e) {
       if (e.target.classList.contains("draggable") && !isLocked) {
         e.stopPropagation();
-
-        console.log("drag start");
 
         initialX = e.clientX;
         initialY = e.clientY;
